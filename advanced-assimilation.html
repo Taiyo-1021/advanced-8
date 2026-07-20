@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assimilation — Advanced Pronunciation</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#06091a;overflow:hidden;height:100vh;width:100vw}
+#app{width:100vw;height:100vh;display:flex;flex-direction:column}
+#progress{position:fixed;top:0;left:0;height:5px;background:linear-gradient(90deg,#6A1B9A,#CE93D8);z-index:99;transition:width .3s ease;border-radius:0 3px 3px 0}
+#slides{flex:1;position:relative;overflow:hidden;min-height:0}
+.slide{position:absolute;inset:0;display:none;flex-direction:column}
+.slide.active{display:flex}
+
+/* NAV */
+#nav{height:48px;background:#060714;display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.08)}
+#nav button{background:rgba(255,255,255,.1);border:none;color:#fff;font-size:13px;padding:6px 20px;border-radius:20px;cursor:pointer;transition:background .2s;font-family:inherit;letter-spacing:.3px}
+#nav button:hover{background:rgba(255,255,255,.22)}
+#nav button:disabled{opacity:.25;cursor:default}
+#counter{color:rgba(255,255,255,.45);font-size:12px;min-width:60px;text-align:center}
+
+/* SHARED */
+.s-head{padding:12px 30px;font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;flex-shrink:0;letter-spacing:.2px}
+.badge{background:rgba(255,255,255,.16);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600}
+.s-body{flex:1;display:flex;padding:0 26px 12px;gap:22px;min-height:0;overflow:hidden}
+.student-badge{background:#6A1B9A;color:#fff;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;flex-shrink:0}
+.hl{color:#CE93D8;font-weight:900}
+.asi{display:inline-block;background:#6A1B9A;color:#fff;border-radius:4px;padding:1px 7px;font-size:.88em;font-weight:700}
+.asi-r{display:inline-block;background:#4A148C;color:#fff;border-radius:4px;padding:1px 7px;font-size:.88em;font-weight:700}
+
+/* TITLE */
+.title-slide{background:linear-gradient(140deg,#06091a 0%,#1a0530 55%,#06091a 100%);align-items:center;justify-content:center;text-align:center}
+.title-slide h1{font-size:clamp(28px,4.5vw,62px);font-weight:900;color:#fff;line-height:1;letter-spacing:-2px}
+.title-slide h1 em{font-style:normal;background:linear-gradient(90deg,#9C27B0,#E1BEE7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.title-sub{font-size:clamp(13px,1.7vw,19px);color:rgba(255,255,255,.6);margin-top:12px}
+.goal-box{margin-top:22px;background:rgba(106,27,154,.09);border:1.5px solid rgba(106,27,154,.4);border-radius:16px;padding:16px 28px;display:inline-block;text-align:left}
+.goal-box p{color:#E1BEE7;font-size:clamp(13px,1.5vw,17px);line-height:1.75}
+.adv-badge{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 16px;font-size:clamp(11px,1.2vw,13px);color:rgba(255,255,255,.5);margin-bottom:14px;letter-spacing:1px;text-transform:uppercase}
+
+/* WARM-UP */
+.warmup-slide{background:#fff;flex-direction:column}
+.warmup-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;gap:16px}
+.warmup-prompt{background:#F3E5F5;border-left:5px solid #6A1B9A;border-radius:0 14px 14px 0;padding:16px 22px;font-size:clamp(13px,1.6vw,18px);font-weight:600;color:#4A148C;max-width:820px;width:100%;line-height:1.65}
+.warmup-words{display:flex;gap:14px;flex-wrap:wrap;max-width:820px;width:100%}
+.warmup-word{background:#F3E5F5;border:2px solid rgba(106,27,154,.25);border-radius:12px;padding:14px 22px;text-align:center;flex:1;min-width:160px}
+.ww-text{font-size:clamp(16px,2vw,26px);font-weight:900;color:#1a1a1a}
+.ww-q{font-size:clamp(10px,1.1vw,12px);color:#888;margin-top:5px}
+.warmup-q{background:#F3E5F5;border-radius:10px;padding:10px 16px;font-size:clamp(12px,1.4vw,15px);color:#6A1B9A;border:1.5px solid #CE93D8;max-width:820px;width:100%}
+.teacher-note{background:#F3E5F5;border:1px solid #CE93D8;border-radius:10px;padding:10px 18px;font-size:clamp(11px,1.25vw,14px);color:#6A1B9A;max-width:820px;width:100%;line-height:1.6}
+
+/* VS BANNER */
+.vs-banner-slide{background:#fff;flex-direction:column}
+.vs-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 26px;gap:12px}
+.vs-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;max-width:960px}
+.vs-card{border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:7px}
+.vs-title{font-size:clamp(13px,1.5vw,18px);font-weight:900}
+.vs-def{font-size:clamp(11px,1.2vw,13px);line-height:1.6;color:#444}
+.vs-ex{background:#fff;border-radius:8px;padding:7px 10px;border:1.5px solid #ddd;font-size:clamp(11px,1.3vw,14px);font-weight:700;line-height:1.5}
+.vs-rule{font-size:clamp(10px,1.1vw,12px);color:#777;font-style:italic;line-height:1.45}
+.vs-note{background:#F3E5F5;border-radius:12px;padding:11px 20px;font-size:clamp(12px,1.35vw,15px);color:#4A148C;font-weight:600;text-align:center;max-width:960px;width:100%}
+
+/* KEY CONCEPT */
+.concept-slide{background:#fff;flex-direction:column}
+.concept-body{flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 26px;min-height:0}
+.concept-cols{display:flex;gap:12px;flex:1;min-height:0}
+.concept-col{border-radius:14px;padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:7px;overflow-y:auto}
+.cc-title{font-size:clamp(12px,1.4vw,16px);font-weight:900;margin-bottom:2px}
+.cc-body{font-size:clamp(11px,1.2vw,13px);line-height:1.6;color:#444}
+.cc-ex-row{display:flex;flex-direction:column;gap:5px}
+.cc-ex{background:#fff;border-radius:8px;padding:7px 10px;border:1.5px solid #eee;font-size:clamp(11px,1.3vw,14px);line-height:1.55}
+.concept-rule{background:#F3E5F5;border-radius:12px;padding:11px 18px;font-size:clamp(12px,1.3vw,15px);color:#4A148C;font-weight:600;text-align:center;flex-shrink:0}
+
+/* SPOT IT */
+.spot-slide{background:#f8f9fa;flex-direction:column}
+.spot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;overflow-y:auto}
+.spot-box{background:#fff;border-radius:12px;padding:12px 16px;border:1.5px solid #e0e0e0;display:flex;flex-direction:column;gap:6px}
+.spot-phrase{font-size:clamp(16px,2vw,26px);font-weight:900;color:#222;padding:4px 0}
+.spot-q{font-size:clamp(11px,1.2vw,13px);color:#888;font-style:italic}
+.spot-reveal-btn{align-self:flex-start;background:#6A1B9A;color:#fff;border:none;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:background .2s}
+.spot-reveal-btn:hover{background:#4A148C}
+.spot-ans{display:none;background:#F3E5F5;border-radius:8px;padding:10px 12px;flex-direction:column;gap:4px}
+.spot-ans.open{display:flex}
+.spot-ans-title{font-size:clamp(12px,1.3vw,15px);font-weight:700;color:#4A148C}
+.spot-hint{font-size:clamp(10px,1.1vw,12px);color:#555;line-height:1.5}
+
+/* TRY IT */
+.tryit-slide{background:#f8f9fa;flex-direction:column}
+.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;overflow-y:auto}
+.pair-card{background:#fff;border-radius:12px;padding:12px 16px;border:1.5px solid #e0e0e0;display:flex;flex-direction:column;gap:6px}
+.pc-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:2px 8px;border-radius:20px;align-self:flex-start;color:#fff}
+.pc-forms{display:flex;gap:10px;align-items:center;margin-top:2px}
+.pc-before{font-size:clamp(15px,1.8vw,22px);font-weight:700;color:#B71C1C;flex:1;text-align:center}
+.pc-arrow{font-size:16px;color:#aaa}
+.pc-after{font-size:clamp(15px,1.8vw,22px);font-weight:900;color:#6A1B9A;flex:1;text-align:center}
+.pc-ipa{font-size:clamp(10px,1.1vw,12px);color:#888;text-align:center}
+.pc-note{font-size:clamp(10px,1.1vw,12px);color:#555;line-height:1.45;margin-top:2px}
+
+.sent-list{display:flex;flex-direction:column;gap:10px;flex:1;overflow-y:auto}
+.sent-card{background:#fff;border-radius:12px;padding:12px 16px;border:1.5px solid #e0e0e0;display:flex;flex-direction:column;gap:5px}
+.sc-num{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6A1B9A;opacity:.8}
+.sc-formal{font-size:clamp(12px,1.4vw,16px);color:#B71C1C;font-weight:600}
+.sc-natural{font-size:clamp(13px,1.5vw,18px);color:#6A1B9A;font-weight:800}
+.sc-note{font-size:clamp(10px,1.1vw,12px);color:#888;font-style:italic;line-height:1.45}
+
+/* ROLE-PLAY */
+.roleplay-slide{background:#1a0530;flex-direction:column}
+.rp-body{flex:1;display:flex;flex-direction:column;gap:10px;padding:12px 26px 12px;min-height:0;overflow:hidden}
+.rp-scenario{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 18px;font-size:clamp(12px,1.3vw,14px);color:rgba(255,255,255,.75);flex-shrink:0;line-height:1.5}
+.rp-cols{display:grid;grid-template-columns:3fr 2fr;gap:14px;flex:1;min-height:0;overflow:hidden}
+.rp-col{background:rgba(255,255,255,.04);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
+.rp-col-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;flex-shrink:0;color:#CE93D8}
+.rp-line{padding:5px 8px;border-radius:8px;display:flex;flex-direction:column;gap:2px}
+.rp-line.teacher{background:rgba(255,255,255,.04)}
+.rp-line.student{background:rgba(106,27,154,.3);border:1px solid rgba(206,147,216,.3)}
+.rp-speaker{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.5;color:#fff}
+.rp-text{font-size:clamp(11px,1.35vw,14px);color:#fff;line-height:1.6}
+.rp-text .hl{color:#CE93D8}
+.rp-tip{background:rgba(106,27,154,.15);border:1px solid rgba(206,147,216,.3);border-radius:10px;padding:8px 14px;font-size:clamp(11px,1.2vw,13px);color:#CE93D8;flex-shrink:0}
+.rp-tips-list{display:flex;flex-direction:column;gap:8px;font-size:clamp(11px,1.25vw,13px);color:rgba(255,255,255,.7)}
+
+/* BUILD IT */
+.build-slide{background:#fff;flex-direction:column}
+.build-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;gap:16px;overflow-y:auto}
+.build-prompt{background:#F3E5F5;border-radius:14px;padding:18px 26px;max-width:760px;width:100%;text-align:center}
+.build-prompt h2{font-size:clamp(15px,1.9vw,22px);font-weight:800;color:#4A148C;margin-bottom:8px}
+.build-prompt p{font-size:clamp(12px,1.4vw,16px);color:#6A1B9A;line-height:1.6}
+.build-targets{display:flex;gap:14px;max-width:760px;width:100%}
+.build-target{border-radius:12px;padding:14px 18px;flex:1;border:1.5px solid}
+.bt-label{font-size:clamp(13px,1.5vw,17px);font-weight:900;margin-bottom:4px}
+.bt-ex{font-size:clamp(10px,1.1vw,12px);color:#666;margin-top:5px;line-height:1.5}
+
+/* QUIZ */
+.quizq-slide{background:#f8f9fa;flex-direction:column}
+.q-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px;width:100%}
+.q-box{background:#fff;border-radius:12px;padding:12px 16px;border:1.5px solid #e0e0e0;display:flex;flex-direction:column;gap:5px}
+.q-num{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6A1B9A;opacity:.8}
+.q-text{font-size:clamp(12px,1.3vw,15px);font-weight:600;color:#222;line-height:1.45}
+.q-opts{display:flex;flex-direction:column;gap:3px}
+.q-opt{font-size:clamp(11px,1.15vw,13px);color:#555;padding:2px 0;line-height:1.4}
+.q-reveal-btn{align-self:flex-start;background:#6A1B9A;color:#fff;border:none;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:2px}
+.q-reveal-btn:hover{background:#4A148C}
+.q-ans-reveal{display:none;background:#F3E5F5;border-radius:8px;padding:8px 12px;margin-top:4px}
+.q-ans-reveal.open{display:block}
+.qr-opts{display:flex;flex-direction:column;gap:3px;margin-bottom:5px}
+.qr-opt{font-size:clamp(11px,1.15vw,13px);color:#555;padding:2px 6px;border-radius:5px}
+.qr-opt.correct{background:#6A1B9A;color:#fff;font-weight:700}
+.qr-hint{font-size:clamp(10px,1.1vw,12px);color:#4A148C;line-height:1.5}
+.think-banner{background:#F3E5F5;border-radius:10px;padding:8px 16px;font-size:clamp(12px,1.3vw,14px);color:#4A148C;font-weight:600;flex-shrink:0}
+
+/* SUMMARY */
+.summary-slide{background:linear-gradient(140deg,#06091a 0%,#1a0530 55%,#06091a 100%);flex-direction:column}
+.sum-cards{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.sum-card{border-radius:16px;padding:20px 22px;min-width:180px;max-width:260px;flex:1}
+.sum-card-icon{font-size:clamp(26px,3.5vw,42px);margin-bottom:8px}
+.sum-card-title{font-size:clamp(13px,1.5vw,18px);font-weight:800;color:#fff;margin-bottom:6px;line-height:1.3}
+.sum-card-body{font-size:clamp(11px,1.2vw,13px);color:rgba(255,255,255,.7);line-height:1.5}
+.sum-foot{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 22px;font-size:clamp(12px,1.3vw,14px);color:rgba(255,255,255,.6);text-align:center;max-width:720px}
+
+/* FREE CONV */
+.freeconv-slide{background:#1a0530;flex-direction:column}
+.fc-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 40px;gap:14px}
+.fc-badge{background:rgba(106,27,154,.3);border:1px solid rgba(206,147,216,.5);border-radius:20px;padding:4px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#CE93D8}
+.fc-topic{font-size:clamp(22px,3.5vw,46px);font-weight:900;color:#fff;letter-spacing:-1px}
+.fc-questions{display:flex;flex-direction:column;gap:8px;width:100%;max-width:720px}
+.fc-q{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 16px;font-size:clamp(13px,1.5vw,16px);color:rgba(255,255,255,.8);line-height:1.55}
+.fc-note{font-size:clamp(11px,1.2vw,13px);color:rgba(255,255,255,.4);text-align:center;max-width:680px;line-height:1.6}
+.fc-teacher{background:rgba(106,27,154,.1);border:1px solid rgba(206,147,216,.25);border-radius:10px;padding:10px 16px;font-size:clamp(11px,1.2vw,13px);color:#CE93D8;max-width:720px;width:100%;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="progress"></div>
+  <div id="slides"></div>
+  <div id="nav">
+    <button id="prevBtn" onclick="move(-1)">◀ Back</button>
+    <span id="counter"></span>
+    <button id="nextBtn" onclick="move(1)">Next ▶</button>
+  </div>
+</div>
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+
+// Spot It
+const SPOT = [
+  {plain:'Did you eat yet?',
+   ans:'"Di<span class="asi">dʒ</span>ya eat yet?" — /d/ + /j/ → /dʒ/',
+   hint:'/d/ at the end of "did" and /j/ (y-sound) of "you" fuse into /dʒ/ — the "j" sound. "Didja eat yet?" This is one of the most common assimilations in English.'},
+  {plain:'Bless you.',
+   ans:'"Ble<span class="asi">ʃ</span>you." — /s/ + /j/ → /ʃ/',
+   hint:'/s/ + /j/ fuse into /ʃ/ — the "sh" sound. "Bless you" → "bleshu". Same as "makes you" → "makeshu", "misses you" → "misseshu".'},
+  {plain:'white paper',
+   ans:'"whi<span class="asi">p</span>paper" — /t/ + /p/ → /p/',
+   hint:'The /t/ of "white" changes place to match the /p/ of "paper". Instead of a tongue-tip stop (/t/), the lips close for /p/. The /t/ effectively becomes /p/ and merges into the following /p/.'},
+  {plain:'green park',
+   ans:'"gree<span class="asi">m</span>park" — /n/ + /p/ → /m/',
+   hint:'/n/ (tongue-tip nasal) changes to /m/ (lip nasal) to match the labial /p/ of "park". Your lips anticipate closing for /p/ and the nasal becomes /m/ first. "Greempark."'},
+  {plain:'ten boys',
+   ans:'"te<span class="asi">m</span>boys" — /n/ + /b/ → /m/',
+   hint:'Same pattern: /n/ + /b/ (both labial) → /m/. The nasal assimilates to the place of the following consonant. "Tembois." Very natural and extremely common.'},
+  {plain:'in case',
+   ans:'"i<span class="asi">ŋ</span>case" — /n/ + /k/ → /ŋ/',
+   hint:'/n/ + /k/ (velar) → /ŋ/ (velar nasal, the "ng" sound). "in case" → "ing case". The nasal moves back in the mouth to match the velar /k/.'},
+];
+
+// Try It #1 — pairs
+const PAIRS = [
+  {type:'s+j→ʃ',  color:'#6A1B9A',before:'bless you',   after:'"bleshu"',    ipa:'/blɛʃu/',   note:'/s/ + /j/ → /ʃ/. Lips round into "sh" position.'},
+  {type:'s+j→ʃ',  color:'#6A1B9A',before:'miss you',    after:'"misshu"',    ipa:'/mɪʃu/',    note:'"miss you" → same fusion. Very common farewell phrase.'},
+  {type:'t+j→tʃ', color:'#7B1FA2',before:'meet you',    after:'"meetchu"',   ipa:'/miːtʃu/',  note:'/t/ + /j/ → /tʃ/ ("ch"). "Nice to meet you" → "meetchu".'},
+  {type:'d+j→dʒ', color:'#7B1FA2',before:'would you',   after:'"wouldja"',   ipa:'/wʊdʒə/',   note:'/d/ + /j/ → /dʒ/ ("j"). Extremely common in questions.'},
+  {type:'t→p',    color:'#4A148C',before:'white paper',  after:'"whippaper"', ipa:'/waɪpˌpeɪpər/', note:'/t/ changes to /p/ before /p/. Place assimilation.'},
+  {type:'n→m',    color:'#4A148C',before:'on purpose',   after:'"ompurpose"', ipa:'/ɒmˈpɜːpəs/', note:'/n/ → /m/ before /p/. The nasal matches the lip position.'},
+  {type:'n→m',    color:'#38006B',before:'ten boys',     after:'"tembois"',   ipa:'/tɛmbɔɪz/', note:'/n/ → /m/ before /b/. Both /b/ and /m/ are lip sounds.'},
+  {type:'n→ŋ',    color:'#38006B',before:'in case',      after:'"ing case"',  ipa:'/ɪŋkeɪs/',  note:'/n/ → /ŋ/ before /k/. The nasal moves back to match /k/.'},
+];
+
+// Try It #2 — sentences
+const SENTENCES = [
+  {formal:'Did you have a good time?',
+   natural:'"Didja have a good time?"',
+   note:'/d/ + /j/ → /dʒ/  •  "did you" → "didja"'},
+  {formal:'I miss you so much.',
+   natural:'"I misshu so much."',
+   note:'/s/ + /j/ → /ʃ/  •  "miss you" → "misshu"'},
+  {formal:'Nice to meet you.',
+   natural:'"Nice to meetchu."',
+   note:'/t/ + /j/ → /tʃ/  •  "meet you" → "meetchu"'},
+  {formal:'It was a great party.',
+   natural:'"It was a greapparty."',
+   note:'/t/ + /p/ → /p/  •  "great party" → "greapparty"'},
+  {formal:'I\'ll be on the next bus.',
+   natural:'"I\'ll be on the nexbus."',
+   note:'/t/ + /b/ → /b/  •  "next bus" → "nexbus"'},
+  {formal:'She moved in with her family.',
+   natural:'"She moved im with her family."',
+   note:'/n/ + /w/ → /m/  •  "in with" → "im with"'},
+];
+
+const ROLEPLAY = [
+  {role:'teacher',label:'Teacher',text:'"Did you get my message?"'},
+  {role:'student',label:'Student',text:'Yeah, I got it. Did you want me to call you back?'},
+  {role:'teacher',label:'Teacher',text:'"Would you be free later tonight?"'},
+  {role:'student',label:'Student',text:'I think so. What did you have in mind?'},
+  {role:'teacher',label:'Teacher',text:'"I was going to meet you at the white building near the park."'},
+  {role:'student',label:'Student',text:'Oh, great! Should I bring anything?'},
+  {role:'teacher',label:'Teacher',text:'"Just yourself! It\'s nice to meet you properly — we\'ve only chatted online."'},
+  {role:'student',label:'Student',text:'I know! I miss you when we\'re not in the same city.'},
+  {role:'teacher',label:'Teacher',text:'"Same! I\'ll be on the next train. Should be there in ten minutes."'},
+  {role:'student',label:'Student',text:'Perfect. I\'m on purpose — I mean, on purpose walking slowly to wait for you!'},
+];
+
+const QUIZ = [
+  {q:'What is "assimilation" （同化）?',
+   opts:['a) A vowel weakening to schwa /ə/','b) A consonant disappearing between two other consonants','c) Two sounds merging — one changes to become more like the other','d) A word being spoken more quickly than usual'],
+   ans:2,hint:'Assimilation（同化）= one sound changes to become more like a neighbouring sound（隣の音に似た音に変化）. The mouth anticipates（先読みして）the next position. Compare: Reduction = vowel weakens; Elision = consonant disappears; Assimilation = consonant transforms.'},
+  {q:'"bless you" in natural speech sounds like:',
+   opts:['a) "bless-yoo" (two separate sounds)','b) "bleshu" (/s/ + /j/ → /ʃ/)','c) "blechu" (/s/ + /j/ → /tʃ/)','d) "bleshyoo" (extra vowel added)'],
+   ans:1,hint:'/s/ + /j/ → /ʃ/ (the "sh" sound). The /s/ assimilates to the /j/ and together they produce /ʃ/. Same pattern: "makes you" → "makeshu", "misses you" → "misseshu".'},
+  {q:'"ten boys" in natural speech sounds like:',
+   opts:['a) "ten-boys" (clear /n/ and /b/)','b) "teng boys" (/n/ → /ŋ/)','c) "tem boys" (/n/ → /m/ before /b/)','d) "ten oys" (/b/ drops)'],
+   ans:2,hint:'/n/ + /b/ → /m/. The nasal /n/ (tongue tip) assimilates to the place of /b/ (lips) and becomes /m/ (lip nasal). Your mouth prepares for the /b/ and the nasal changes with it. "Tembois."'},
+  {q:'"in case" in natural speech sounds like:',
+   opts:['a) "in-case" (clear /n/)','b) "im case" (/n/ → /m/)','c) "ing case" (/n/ → /ŋ/ before /k/)','d) "i\'case" (/n/ elided)'],
+   ans:2,hint:'/n/ + /k/ → /ŋ/. /k/ is a velar sound (back of mouth). The nasal anticipates this position and becomes /ŋ/ (also velar). "In case" → "ing case". Listen for this in "in particular", "in common", "in question".'},
+  {q:'How is assimilation different from elision?',
+   opts:['a) They are the same — both involve sounds disappearing','b) Elision removes a sound completely; assimilation changes a sound into a different one','c) Assimilation only affects vowels; elision only affects consonants','d) Elision is formal; assimilation is informal'],
+   ans:1,hint:'Elision（脱落）= a sound disappears. e.g. "last week" → "lass week" (/t/ gone). Assimilation（同化）= a sound changes shape. e.g. "ten boys" → "tem boys" (/n/ becomes /m/). The sound is still there — it just transformed.'},
+  {q:'Which sentence contains assimilation?',
+   opts:['a) "I jus\' need a second." (/t/ dropped)','b) "I wanna go." (want to → wanna)','c) "Would you like some?" → "Wouldja like some?" (/d+j/ → /dʒ/)','d) "and" → /n/ in fast speech'],
+   ans:2,hint:'"Wouldja" = /d/ + /j/ → /dʒ/. This is assimilation — the /d/ and /j/ merge into the /dʒ/ sound. Option a is elision, option b is reduction (wanna), option d is reduction (weak form).'},
+];
+
+// ═══════════════════════════════════════════
+//  BUILDERS
+// ═══════════════════════════════════════════
+function titleHTML(){
+  return `<div class="slide title-slide">
+  <div style="max-width:820px;padding:18px;text-align:center">
+    <div class="adv-badge">Advanced Pronunciation</div>
+    <h1><em>Assimilation</em></h1>
+    <div style="font-size:clamp(16px,2.5vw,28px);font-weight:700;color:rgba(255,255,255,.45);margin-top:4px">（同化・アシミレーション）</div>
+    <p class="title-sub">When two sounds meet and one transforms — "ten boys" becomes "tem boys".</p>
+    <div class="goal-box">
+      <p>🎯 <strong>Today's Goal:</strong> Understand how sounds change to match their neighbours, and recognise assimilation in real speech</p>
+      <p style="margin-top:4px">⏱ 45 minutes &nbsp;·&nbsp; 12 slides &nbsp;·&nbsp; Use ◀ ▶ or arrow keys to navigate</p>
+    </div>
+  </div></div>`;
+}
+
+function warmupHTML(){
+  return `<div class="slide warmup-slide">
+  <div class="s-head" style="background:#6A1B9A">Warm-Up <span class="badge">You first! 🗣️</span> <span class="student-badge">Student · 3 min</span></div>
+  <div class="warmup-body">
+    <div class="warmup-prompt">Say these phrases quickly and naturally. Listen to your own mouth — does something unexpected happen?</div>
+    <div class="warmup-words">
+      <div class="warmup-word"><div class="ww-text">bless you</div><div class="ww-q">Does the /s/ stay as /s/?</div></div>
+      <div class="warmup-word"><div class="ww-text">did you</div><div class="ww-q">Do /d/ and /y/ stay separate?</div></div>
+      <div class="warmup-word"><div class="ww-text">ten boys</div><div class="ww-q">Is the /n/ still /n/ before /b/?</div></div>
+      <div class="warmup-word"><div class="ww-text">white paper</div><div class="ww-q">Does the /t/ sound like a /t/?</div></div>
+    </div>
+    <div class="warmup-q">💬 Which phrase sounded most different from how it's written? Can you describe what changed?</div>
+    <div class="teacher-note">📝 <strong>Teacher note:</strong> Let the student experiment first. Then say each phrase yourself at natural speed — "bleshu", "didja", "tembois", "whippaper". Ask: "What do you think happened to the sounds?" The answer is what today's lesson is about.</div>
+  </div></div>`;
+}
+
+function vsHTML(){
+  return `<div class="slide vs-banner-slide">
+  <div class="s-head" style="background:#6A1B9A">Reduction / Elision / Assimilation — What's the difference? <span class="badge">Quick Review 💡</span></div>
+  <div class="vs-body">
+    <div class="vs-grid">
+      <div class="vs-card" style="background:#FFF8E1;border:2px solid rgba(255,160,0,.3)">
+        <div class="vs-title" style="color:#E65100">Reduction（リダクション）</div>
+        <div class="vs-def">Function words（機能語）lose their vowel. The word is still there — just <strong>weaker（弱くなる）</strong>.</div>
+        <div class="vs-ex" style="border-color:#FFE082;background:#FFFDE7">"and" → /n/ &nbsp;·&nbsp; "to" → /tə/<br>"can" → /kən/ &nbsp;·&nbsp; "for" → /fər/</div>
+        <div class="vs-rule">Vowel（母音）→ schwa or disappears. Shape of consonants stays.</div>
+      </div>
+      <div class="vs-card" style="background:#E3F2FD;border:2px solid rgba(13,71,161,.25)">
+        <div class="vs-title" style="color:#0D47A1">Elision（エリジョン・脱落）</div>
+        <div class="vs-def">A consonant（子音）— usually /t/ or /d/ — completely <strong>disappears（消える）</strong> between other consonants.</div>
+        <div class="vs-ex" style="border-color:#90CAF9;background:#F0F8FF">"last week" → "lass week"<br>"mostly" → "mosly"</div>
+        <div class="vs-rule">Consonant gone. The sounds around it stay.</div>
+      </div>
+      <div class="vs-card" style="background:#F3E5F5;border:2px solid rgba(106,27,154,.25)">
+        <div class="vs-title" style="color:#4A148C">Assimilation（同化）<span style="font-size:.7em;font-weight:500;color:#888"> ← 今日</span></div>
+        <div class="vs-def">Two sounds meet and one <strong>changes its shape（形が変わる）</strong> to match the other. The sound is still there — but transformed.</div>
+        <div class="vs-ex" style="border-color:#CE93D8;background:#FCF0FF">"ten boys" → "tem boys"<br>"bless you" → "bleshu"</div>
+        <div class="vs-rule">Sound transforms（変化）. Doesn't disappear — just becomes a different sound.</div>
+      </div>
+    </div>
+    <div class="vs-note">💡 All three make speech faster and more natural — but in different ways.&nbsp; <span style="font-size:.9em;font-weight:400;color:#555">（3つとも発話をより速く、より自然にする — ただし仕組みが異なる）</span></div>
+  </div></div>`;
+}
+
+function conceptHTML(){
+  return `<div class="slide concept-slide">
+  <div class="s-head" style="background:#6A1B9A">Key Concept — 3 Assimilation Patterns <span class="badge">Teacher · 2 min</span></div>
+  <div class="concept-body">
+    <div class="concept-cols">
+      <div class="concept-col" style="background:#F3E5F5;border:2px solid rgba(106,27,154,.25)">
+        <div class="cc-title" style="color:#4A148C">① Palatalization <span style="font-size:.75em;font-weight:500;color:#888">— "sh/ch/j" に変わる &nbsp; s/t/d + y-sound</span></div>
+        <div class="cc-body">/s/, /t/, or /d/ before /j/ (the "y" sound) fuse into a brand-new sound. <span style="color:#777;font-size:.9em">（y の音の前で2つが合体して別の音になる）</span></div>
+        <div class="cc-ex-row">
+          <div class="cc-ex">/s/ + /j/ → <span class="asi">/ʃ/</span>: "bless you" → "ble<b>sh</b>u"</div>
+          <div class="cc-ex">/t/ + /j/ → <span class="asi">/tʃ/</span>: "meet you" → "mee<b>tchu</b>"</div>
+          <div class="cc-ex">/d/ + /j/ → <span class="asi">/dʒ/</span>: "did you" → "di<b>dja</b>"</div>
+        </div>
+      </div>
+      <div class="concept-col" style="background:#EDE7F6;border:2px solid rgba(74,20,140,.2)">
+        <div class="cc-title" style="color:#4A148C">② Place assimilation <span style="font-size:.75em;font-weight:500;color:#888">— 次の音に合わせて変わる &nbsp; t/d + p/b/k/g</span></div>
+        <div class="cc-body">/t/ or /d/ changes to match the following consonant. <span style="color:#777;font-size:.9em">（次の音に合わせて変わる — 唇を使う音 p/b/m の前、または喉の奥を使う音 k/g の前）</span></div>
+        <div class="cc-ex-row">
+          <div class="cc-ex">/t/ + /p/ → <span class="asi">/p/</span>: "white paper" → "whi<b>p</b>paper"</div>
+          <div class="cc-ex">/t/ + /k/ → <span class="asi">/k/</span>: "credit card" → "credi<b>k</b>card"</div>
+          <div class="cc-ex">/d/ + /b/ → <span class="asi">/b/</span>: "good boy" → "goo<b>b</b>boy"</div>
+        </div>
+      </div>
+      <div class="concept-col" style="background:#F3E5F5;border:2px solid rgba(106,27,154,.2)">
+        <div class="cc-title" style="color:#4A148C">③ Nasal assimilation <span style="font-size:.75em;font-weight:500;color:#888">— 「ん」の音が変わる &nbsp; n + p/b/k/g</span></div>
+        <div class="cc-body">/n/ shifts to match where the next consonant is made. Before p/b/m → <b>/m/</b>. Before k/g → <b>/ŋ/</b>. <span style="color:#777;font-size:.9em">（次の音の作られる場所に合わせて「ん」の形が変わる — /m/ は口を閉じた「ん」、/ŋ/ は "ng" の「ん」）</span></div>
+        <div class="cc-ex-row">
+          <div class="cc-ex">/n/ + /p,b/ → <span class="asi">/m/</span>: "ten boys" → "te<b>m</b>boys"</div>
+          <div class="cc-ex">/n/ + /m/ → <span class="asi">/m/</span>: "on my way" → "o<b>m</b>my way"</div>
+          <div class="cc-ex">/n/ + /k,g/ → <span class="asi">/ŋ/</span>: "in case" → "i<b>ng</b>case"</div>
+        </div>
+      </div>
+    </div>
+    <div class="concept-rule">💡 Key rule: Sounds are <strong>lazy（省エネ）</strong> — they change to match their neighbours（隣の音に合わせる）so the mouth moves less. The <em>next</em> sound pulls the previous one toward it（後ろの音が前の音を引っ張る）.</div>
+  </div></div>`;
+}
+
+function spotHTML(){
+  const boxes = SPOT.map((s,i)=>{
+    const id=`spot-${i}`;
+    return `<div class="spot-box">
+      <div class="spot-phrase">${s.plain}</div>
+      <div class="spot-q">Which sounds assimilate（同化）? What do they become?</div>
+      <button class="spot-reveal-btn" onclick="toggleAns(this,'${id}')">▼ 答えを見る</button>
+      <div class="spot-ans" id="${id}">
+        <div class="spot-ans-title">${s.ans}</div>
+        <div class="spot-hint">${s.hint}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="slide spot-slide">
+  <div class="s-head" style="background:#6A1B9A">Spot It — Find the assimilation 🔍 <span class="badge">Student 🗣️</span></div>
+  <div class="s-body" style="flex-direction:column;gap:8px">
+    <div style="font-size:clamp(12px,1.4vw,14px);color:#555;flex-shrink:0">Say each phrase quickly. Which sounds change（変化）? What do they become? Then check.</div>
+    <div class="spot-grid">${boxes}</div>
+  </div></div>`;
+}
+
+function tryit1HTML(){
+  const cards = PAIRS.map(p=>`
+    <div class="pair-card">
+      <div class="pc-type" style="background:${p.color}">${p.type}</div>
+      <div class="pc-forms">
+        <div style="flex:1;text-align:center"><div class="pc-before">${p.before}</div><div class="pc-ipa">written form</div></div>
+        <div class="pc-arrow">→</div>
+        <div style="flex:1;text-align:center"><div class="pc-after">${p.after}</div><div class="pc-ipa">${p.ipa}</div></div>
+      </div>
+      <div class="pc-note">${p.note}</div>
+    </div>`).join('');
+  return `<div class="slide tryit-slide">
+  <div class="s-head" style="background:#6A1B9A">Try It #1 — Before → After <span class="badge">Student 🗣️</span></div>
+  <div class="s-body" style="flex-direction:column;gap:8px">
+    <div style="font-size:clamp(12px,1.4vw,14px);color:#555;flex-shrink:0">Say the written form first（書いた形）— then the assimilated form（同化した形）. Say it fast — the transformation（変化）happens automatically!</div>
+    <div class="pair-grid">${cards}</div>
+  </div></div>`;
+}
+
+function tryit2HTML(){
+  const cards = SENTENCES.map((s,i)=>`
+    <div class="sent-card">
+      <div class="sc-num">Sentence ${i+1}</div>
+      <div class="sc-formal">📖 ${s.formal}</div>
+      <div class="sc-natural">🗣️ ${s.natural}</div>
+      <div class="sc-note">${s.note}</div>
+    </div>`).join('');
+  return `<div class="slide tryit-slide">
+  <div class="s-head" style="background:#7B1FA2">Try It #2 — Full sentences <span class="badge">Student 🗣️</span></div>
+  <div class="s-body" style="flex-direction:column;gap:8px">
+    <div style="font-size:clamp(12px,1.4vw,14px);color:#555;flex-shrink:0">Read the written version first, then say the natural version（自然な発音）fast. Then try without looking!（見ないで言ってみよう）</div>
+    <div class="sent-list">${cards}</div>
+  </div></div>`;
+}
+
+function roleplayHTML(){
+  const lines = ROLEPLAY.map(l=>`
+    <div class="rp-line ${l.role}">
+      <div class="rp-speaker">${l.label}</div>
+      <div class="rp-text">${l.text}</div>
+    </div>`).join('');
+  return `<div class="slide roleplay-slide">
+  <div class="s-head" style="background:#1a0530">Role-Play 📱 Making Plans <span class="badge">Student leads · 8 min</span></div>
+  <div class="rp-body">
+    <div class="rp-scenario">📍 <strong>Scenario:</strong> Arranging to meet up with a friend. The student should speak naturally — phrases like "did you", "would you", "meet you", and "miss you" are full of assimilation opportunities!</div>
+    <div class="rp-cols">
+      <div class="rp-col">
+        <div class="rp-col-label">Dialogue</div>
+        ${lines}
+      </div>
+      <div class="rp-col">
+        <div class="rp-col-label">Listen for</div>
+        <div class="rp-tips-list">
+          <div><span class="asi">dʒ</span> "did you" → "didja"</div>
+          <div><span class="asi">tʃ</span> "meet you" → "meetchu"</div>
+          <div><span class="asi">ʃ</span>  "miss you" → "misshu"</div>
+          <div><span class="asi">p</span>  "next train" → "nex-train" (t+tr)</div>
+          <div style="margin-top:6px">🔄 Round 2: improvise — arrange to meet somewhere this weekend!</div>
+          <div>🎯 Challenge: use "did you", "would you", "meet you" naturally.</div>
+        </div>
+      </div>
+    </div>
+    <div class="rp-tip">🌟 Teacher: after the role-play, pick one phrase with assimilation and ask the student to say it slowly then fast. They'll feel the transformation happen in their mouth.</div>
+  </div></div>`;
+}
+
+function buildHTML(){
+  return `<div class="slide build-slide">
+  <div class="s-head" style="background:#6A1B9A">Build It 🔨 — Let the sounds transform! <span class="badge">Student 🗣️ · 5 min</span></div>
+  <div class="build-body">
+    <div class="build-prompt">
+      <h2>Make 3 sentences — one for each pattern!</h2>
+      <p>Use the trigger phrases below. Say the sentence at natural speed — let the assimilation（同化）happen on its own. Don't force it!（自然に任せて）</p>
+    </div>
+    <div class="build-targets">
+      <div class="build-target" style="background:#F3E5F5;border-color:rgba(106,27,154,.3)">
+        <div class="bt-label" style="color:#4A148C"><span class="asi">s/t/d + j</span> Palatalization</div>
+        <div class="bt-ex">Use "did you", "would you", "miss you", "meet you", "don't you".<br><em>e.g. "Did you see that?"</em> → "Didja see that?"</div>
+      </div>
+      <div class="build-target" style="background:#EDE7F6;border-color:rgba(74,20,140,.25)">
+        <div class="bt-label" style="color:#4A148C"><span class="asi-r">t → p/k</span> Place assim.</div>
+        <div class="bt-ex">Use "great party", "white bag", "credit card", "short cut".<br><em>e.g. "It was a great party."</em></div>
+      </div>
+      <div class="build-target" style="background:#F3E5F5;border-color:rgba(106,27,154,.2)">
+        <div class="bt-label" style="color:#4A148C"><span class="asi">n → m/ŋ</span> Nasal assim.</div>
+        <div class="bt-ex">Use "in case", "on purpose", "ten people", "green park".<br><em>e.g. "I did it on purpose."</em></div>
+      </div>
+    </div>
+    <div class="teacher-note" style="background:#F3E5F5;border:1px solid #CE93D8;border-radius:10px;padding:10px 18px;font-size:clamp(11px,1.25vw,14px);color:#4A148C;max-width:760px;width:100%;line-height:1.6">📝 <strong>Teacher note:</strong> Assimilation is harder to consciously control than linking or elision — it happens automatically at speed. If the student produces it naturally, highlight it. If not, don't force it: just say the phrase together fast and let their mouth find it.</div>
+  </div></div>`;
+}
+
+function quizHTML(){
+  const qs = QUIZ.map((q,i)=>{
+    const id=`qrev-${i}`;
+    const opts=q.opts.map(o=>`<div class="q-opt">${o}</div>`).join('');
+    const revealOpts=q.opts.map((o,ci)=>`<div class="qr-opt${ci===q.ans?' correct':''}">${o}</div>`).join('');
+    return `<div class="q-box">
+      <div class="q-num">Question ${i+1} of ${QUIZ.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-opts">${opts}</div>
+      <button class="q-reveal-btn" onclick="toggleAns(this,'${id}')">▼ 答えを見る</button>
+      <div class="q-ans-reveal" id="${id}">
+        <div class="qr-opts">${revealOpts}</div>
+        <div class="qr-hint">💡 ${q.hint}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="slide quizq-slide">
+  <div class="s-head" style="background:#4A148C">Mini Quiz <span class="badge">Think first! 🤔</span></div>
+  <div class="s-body" style="flex-direction:column;gap:8px;overflow-y:auto">
+    <div class="think-banner">🤔 Answer in your head first, then press "答えを見る" to check!</div>
+    <div class="q-grid" style="padding-bottom:8px">${qs}</div>
+  </div></div>`;
+}
+
+function summaryHTML(){
+  const cards=[
+    {icon:'🔀',title:'Palatalization（口蓋化）',body:'s+j→ʃ "bleshu" &nbsp; t+j→tʃ "meetchu" &nbsp; d+j→dʒ "didja". Two sounds merge into one new sound. Extremely common in everyday speech.',color:'#6A1B9A'},
+    {icon:'🎯',title:'Place assimilation（調音位置の同化）',body:'t+p→p "whippaper" &nbsp; t+k→k "credikcards" &nbsp; d+b→b "goobbboy". /t/ or /d/ changes position to match the following consonant.',color:'#7B1FA2'},
+    {icon:'👃',title:'Nasal assimilation（鼻音の同化）',body:'n+p/b→m "tembois" &nbsp; n+k/g→ŋ "ingcase". /n/ shifts forward or back to match where the next consonant is made.',color:'#4A148C'},
+  ];
+  const cardHTML=cards.map(c=>`
+    <div class="sum-card" style="background:${c.color}">
+      <div class="sum-card-icon">${c.icon}</div>
+      <div class="sum-card-title">${c.title}</div>
+      <div class="sum-card-body">${c.body}</div>
+    </div>`).join('');
+  return `<div class="slide summary-slide">
+  <div class="s-head" style="background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.09)">
+    <span style="color:#fff">Summary — Assimilation（同化）</span>
+    <span class="badge" style="background:rgba(255,255,255,.1);color:#CE93D8">Lesson Complete 🎉</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px 26px">
+    <div class="sum-cards">${cardHTML}</div>
+    <div class="sum-foot">
+      <strong>Practice tip:</strong> The next time you say "did you", "would you", "miss you", or "meet you" — say it fast and notice what happens in your mouth. The transformation（変化）is automatic. Trust your mouth!
+    </div>
+  </div></div>`;
+}
+
+function freeConvHTML(){
+  return `<div class="slide freeconv-slide">
+  <div class="s-head" style="background:#1a0530;border-top:2px solid rgba(206,147,216,.35)">
+    Free Conversation <span class="badge">Student leads · open time</span>
+  </div>
+  <div class="fc-body">
+    <div class="fc-badge">Today's Topic</div>
+    <div class="fc-topic">Strange Habits</div>
+    <div class="fc-questions">
+      <div class="fc-q">💬 Do you have any strange habits or rituals? Things you always do in a particular way?</div>
+      <div class="fc-q">💬 Is there something you need to do before going to sleep, or to start your day?</div>
+      <div class="fc-q">💬 Do other people find any of your habits a bit unusual? What do they say?</div>
+      <div class="fc-q">💬 Have you picked up any new habits recently — good or bad?</div>
+    </div>
+    <div class="fc-teacher">🌟 <strong>Teacher:</strong> As the student speaks, listen for "did you", "would you", "in case", "on purpose" and similar phrases. After the conversation, highlight one or two places where assimilation would naturally occur — model it and ask the student to repeat.</div>
+    <div class="fc-note">Casual conversation = assimilation everywhere. The faster and more naturally they speak, the more it emerges! 🔀</div>
+  </div></div>`;
+}
+
+// ═══════════════════════════════════════════
+//  ENGINE
+// ═══════════════════════════════════════════
+let cur = 0;
+const SLIDES_HTML = [
+  titleHTML(),
+  warmupHTML(),
+  vsHTML(),
+  conceptHTML(),
+  spotHTML(),
+  tryit1HTML(),
+  tryit2HTML(),
+  roleplayHTML(),
+  buildHTML(),
+  quizHTML(),
+  summaryHTML(),
+  freeConvHTML(),
+];
+
+function build(){
+  const el = document.getElementById('slides');
+  el.innerHTML = SLIDES_HTML.join('');
+  const slides = el.querySelectorAll('.slide');
+  slides.forEach((s,i)=>{ if(i===0) s.classList.add('active'); });
+  render();
+}
+
+function render(){
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach((s,i)=>s.classList.toggle('active', i===cur));
+  document.getElementById('counter').textContent = `${cur+1} / ${slides.length}`;
+  document.getElementById('prevBtn').disabled = cur===0;
+  document.getElementById('nextBtn').disabled = cur===slides.length-1;
+  document.getElementById('progress').style.width = `${((cur+1)/slides.length)*100}%`;
+}
+
+function move(d){ cur=Math.max(0,Math.min(SLIDES_HTML.length-1,cur+d)); render(); }
+
+function toggleAns(btn, id){
+  const el=document.getElementById(id);
+  const open=el.classList.toggle('open');
+  btn.textContent=open?'▲ 隠す':'▼ 答えを見る';
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') move(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') move(-1);
+});
+
+build();
+</script>
+</body>
+</html>
