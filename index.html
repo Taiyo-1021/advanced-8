@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -377,7 +377,7 @@ function spotHTML(){
     return `<div class="spot-box">
       <div class="spot-phrase">${s.plain}</div>
       <div class="spot-q">Which sounds assimilate（同化）? What do they become?</div>
-      <button class="spot-reveal-btn" onclick="toggleAns(this,'${id}')">▼ 答えを見る</button>
+      <button class="spot-reveal-btn" onclick="toggleAns(this,'${id}')">Show Answer</button>
       <div class="spot-ans" id="${id}">
         <div class="spot-ans-title">${s.ans}</div>
         <div class="spot-hint">${s.hint}</div>
@@ -493,7 +493,7 @@ function quizHTML(){
       <div class="q-num">Question ${i+1} of ${QUIZ.length}</div>
       <div class="q-text">${q.q}</div>
       <div class="q-opts">${opts}</div>
-      <button class="q-reveal-btn" onclick="toggleAns(this,'${id}')">▼ 答えを見る</button>
+      <button class="q-reveal-btn" onclick="toggleAns(this,'${id}')">Show Answer</button>
       <div class="q-ans-reveal" id="${id}">
         <div class="qr-opts">${revealOpts}</div>
         <div class="qr-hint">💡 ${q.hint}</div>
@@ -503,7 +503,7 @@ function quizHTML(){
   return `<div class="slide quizq-slide">
   <div class="s-head" style="background:#4A148C">Mini Quiz <span class="badge">Think first! 🤔</span></div>
   <div class="s-body" style="flex-direction:column;gap:8px;overflow-y:auto">
-    <div class="think-banner">🤔 Answer in your head first, then press "答えを見る" to check!</div>
+    <div class="think-banner">🤔 Answer in your head first, then press "Show Answer" to check!</div>
     <div class="q-grid" style="padding-bottom:8px">${qs}</div>
   </div></div>`;
 }
@@ -593,7 +593,7 @@ function move(d){ cur=Math.max(0,Math.min(SLIDES_HTML.length-1,cur+d)); render()
 function toggleAns(btn, id){
   const el=document.getElementById(id);
   const open=el.classList.toggle('open');
-  btn.textContent=open?'▲ 隠す':'▼ 答えを見る';
+  btn.textContent=open?'Hide':'Show Answer';
 }
 
 document.addEventListener('keydown',e=>{
